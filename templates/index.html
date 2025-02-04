@@ -90,7 +90,7 @@
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            height: 600px;
+            height: 700px; /* Limit height to prevent overflow */  
             overflow: auto;
         }
         .file-header {
@@ -169,12 +169,56 @@
         [data-filtered="true"] {
             display: none;
         }
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        body.dark-mode .upload-form,
+        body.dark-mode .file-content {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+        body.dark-mode .file-header {
+            background-color: #333;
+        }
+        body.dark-mode .log-table th {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        body.dark-mode .log-table td {
+            border-color: #444;
+        }
+        body.dark-mode .log-row.valid {
+            background-color: #1e1e1e;
+        }
+        body.dark-mode .log-row.invalid {
+            background-color: #2e2e2e;
+        }
+        body.dark-mode .column-toggle,
+        body.dark-mode .remove-filter {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        body.dark-mode .timestamp { color: #64b5f6; }
+        body.dark-mode .level.INFO { color: #81c784; }
+        body.dark-mode .level.WARN { color: #ffb74d; }
+        body.dark-mode .level.ERROR { color: #e57373; }
+        body.dark-mode .level.DEBUG { color: #bdbdbd; }
+        body.dark-mode .level.TRACE { color: #90a4ae; }
+        body.dark-mode .level.FATAL { color: #ef5350; }
+        body.dark-mode .logger { color: #9575cd; }
+        body.dark-mode .file { color: #a1887f; }
+        body.dark-mode .message { color: #e0e0e0; }
+        body.dark-mode .details { color: #aed581; }
+        body.dark-mode .stack-trace { color: #ef5350; }
+        body.dark-mode .error-message { color: #ef5350; }
     </style>
 </head>
-<body>
+<body class="dark-mode">
     <div class="upload-form">
         <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
             <input type="file" name="files" id="fileInput" multiple required>
+            <input type="hidden" name="darkMode" id="darkModeInput" value="true">
         </form>
     </div>
 
@@ -273,6 +317,7 @@
     <script>
         // Auto-submit form when files are selected
         document.getElementById('fileInput').addEventListener('change', function() {
+            document.getElementById('darkModeInput').value = document.body.classList.contains('dark-mode');
             document.getElementById('uploadForm').submit();
         });
 
@@ -385,6 +430,32 @@
                 applyFilters();
             });
         });
+
+        // Dark mode toggle
+        const darkModeToggle = document.createElement('button');
+        darkModeToggle.textContent = 'Toggle Dark Mode';
+        darkModeToggle.className = 'dark-mode-toggle';
+        darkModeToggle.style.position = 'fixed';
+        darkModeToggle.style.top = '20px';
+        darkModeToggle.style.right = '20px';
+        darkModeToggle.style.padding = '10px';
+        darkModeToggle.style.backgroundColor = '#4CAF50';
+        darkModeToggle.style.color = 'white';
+        darkModeToggle.style.border = 'none';
+        darkModeToggle.style.borderRadius = '4px';
+        darkModeToggle.style.cursor = 'pointer';
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            document.getElementById('darkModeInput').value = document.body.classList.contains('dark-mode');
+        });
+        document.body.appendChild(darkModeToggle);
+
+        // Apply dark mode based on local storage
+        if (localStorage.getItem('darkMode') !== 'false') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeInput').value = 'true';
+        }
     </script>
 </body>
 </html>
